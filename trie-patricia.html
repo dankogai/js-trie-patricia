@@ -10,7 +10,7 @@
 <body>
 <h1>Trie.Patricia</h1>
 <p>
-$Id: trie-patricia.html,v 0.1 2012/01/21 10:13:47 dankogai Exp dankogai $
+$Id: trie-patricia.html,v 0.2 2012/01/21 10:54:43 dankogai Exp dankogai $
 </p>
 <div style="border:outset 1px; padding:0.5em">
 <textarea rows="24" style="width:100%;font-family:monospace">
@@ -34,6 +34,7 @@ p(rx);
     p(v, v.match(rx));
 });
 p(JSON.stringify(tp.toObject()));
+p(tp = Trie.Patricia(tp.toObject())); /* Should we implement .clone ? */
 p(tp.asJSON(null, 2));
 </textarea
 ><input type="submit" value="run"   onclick="rundom(this)"
