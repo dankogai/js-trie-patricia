@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!--[if IE]>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<![endif]-->
+<title>Trie.Patricia</title>
+<script src="trie-patricia.js"></script>
+<body>
+<h1>Trie.Patricia</h1>
+<p>
+$Id: trie-patricia.html,v 0.1 2012/01/21 10:13:47 dankogai Exp dankogai $
+</p>
+<div style="border:outset 1px; padding:0.5em">
+<textarea rows="24" style="width:100%;font-family:monospace">
+var tp = Trie.Patricia({foo:1,fool:2,foolish:3,foolishness:4});
+p(tp.set('f', undefined));
+p(tp.get('f'));
+p(tp.has('f'));
+p(tp.has('fo'));
+p(tp.del('f'));
+p(tp.has('f'));
+tp.each(function(k, v){
+    p(k, v);
+});
+p(tp.keys());
+p(tp.values());
+p(tp.toRegExp('g'));
+p(JSON.stringify(tp.toObject()));
+p(tp.asJSON(null, 2));
+</textarea
+><input type="submit" value="run"   onclick="rundom(this)"
+><input type="submit" value="clear" onclick="clsdom(this)"
+><pre></pre>
+</div>
+
+<script>
+rundom = function(that){
+    try{
+        var out = that.nextSibling.nextSibling;
+        var p = function(){
+            out.innerHTML += '//: ' + [].join.call(arguments, ', ');
+            out.appendChild(document.createElement('br'));
+        }
+        var e = that.previousSibling;
+        var f = new Function( 'p', (e.value || e.innerText || e.textContent) );
+        f(p);     
+    }catch(e){
+        alert(e);
+    }
+};
+clsdom = function(that){
+  that.nextSibling.innerHTML = '';
+};
+
+(function(root, className){
+     var walkDOM = function(node, f){
+        f(node);
+        var kids = node.childNodes;
+        for (var i = 0, l = kids.length; i < l; i++) arguments.callee(kids[i], f)
+    };
+    walkDOM(root, function(node){
+        if (node.nodeType  !== 1) return;
+        if (node.nodeName.toLowerCase() !== 'pre') return;
+        if (node.className !== className) return;
+        node.className = 'prettyprint'; // for google-code-prettify
+        try{
+            (new Function(node.innerText || node.textContent))();
+        }catch(e){
+            alert(e + "\n" + (node.innerText || node.textContent));
+        }
+    });
+})(document.body, 'evalonload');
+</script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>
+(function($){
+
+$('#demosrc').text($('#demo').html());
+
+var keysOf = function(o){ 
+    var keys = [];
+    for (var k in o) keys[keys.length] = k;
+    return keys;
+};
+
+var json2table = function(json){
+    var tbody = $('<table/>');
+    $.each(keysOf(json).sort(), function(i, k){
+        var tr = $('<tr/>').css({verticalAlign:'top'});
+        $('<th/>').text(k).css({textAlign:'right'}).appendTo(tr);
+        var td = $('<td/>').text(json[k])
+        if (k.match(/^std/)) td.css({fontFamily:'monospace',whiteSpace:'pre'});
+        td.appendTo(tr);
+        tr.appendTo(tbody);
+    });
+    return tbody.appendTo($('<table/>'));
+};
+
+LLEval = function(srcNode, dstNode, lang){
+    var text = srcNode.value;
+    if (!text){
+      text = $('<div>' +
+        srcNode.innerHTML.replace(/&nbsp;/g, ' ').replace(/<br>\n?/g, '\n')
+        + '</div>'
+      ).text();
+    }
+    var query = {s:text};
+    if (lang) query['l'] = lang;
+    var url = 'http://api.dan.co.jp/lleval.cgi';
+    var proto = 'json';
+    if ($.browser.msie || $.browser.opera){ 
+        url   += '?c=?';
+        proto += 'p';
+    } /* falls back to JSONP */
+    $.get(url, query, function(json){
+        $(dstNode).html(json2table(json)).hide().show('slow');
+    }, proto);
+};
+
+})(jQuery);
+</script>
+</body>
+</html>
