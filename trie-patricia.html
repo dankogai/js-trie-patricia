@@ -27,6 +27,12 @@ tp.each(function(k, v){
 p(tp.keys());
 p(tp.values());
 p(tp.toRegExp('g'));
+var s = '' + tp.toRegExp(), /* for exact match */
+    rx = new RegExp( '^' + s.substr(1, s.length-2) + '$', 'm');
+p(rx);
+'foo fool foolish foolishness fools f'.split(' ').forEach(function(v){
+    p(v, v.match(rx));
+});
 p(JSON.stringify(tp.toObject()));
 p(tp.asJSON(null, 2));
 </textarea
