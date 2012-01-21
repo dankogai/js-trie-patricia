@@ -1,5 +1,5 @@
 /*
- * $Id: trie-patricia.js,v 0.1 2012/01/21 10:13:47 dankogai Exp dankogai $
+ * $Id: trie-patricia.js,v 0.2 2012/01/21 10:18:03 dankogai Exp dankogai $
  *
  *  Licensed under the MIT license.
  *  http://www.opensource.org/licenses/mit-license.php
@@ -8,7 +8,7 @@
  *      http://en.wikipedia.org/wiki/Radix_trie
  */
 
-(function(global){
+(function(global) {
 
 if (! Object.create || 'valueOf' in Object.create(null))
     throw Error('ES5 required');
@@ -23,12 +23,12 @@ var preflen = function(a, b) {
 
 var TP = function(o) {
     if (!(this instanceof TP)) return new TP(o);
-    (function(self, o){
+    (function(self, o) {
         if (o !== Object(o)) return self;
-        else if (Array.isArray(o)) Object.keys(o).forEach(function(k){
+        else if (Array.isArray(o)) Object.keys(o).forEach(function(k) {
             self.set(o[k], 1);
         });
-        else Object.keys(o).forEach(function(k){
+        else Object.keys(o).forEach(function(k) {
             self.set(k, o[k]);
         });
         return self;
@@ -38,8 +38,8 @@ var TP = function(o) {
 (function(methods) {
     for (var p in methods) TP.prototype[p] = methods[p];
     var slice = Array.prototype.slice;
-    for (var p in methods) TP[p] =  (function(method) {
-        return function(t){
+    for (var p in methods) TP[p] = (function(method) {
+        return function(t) {
             return method.apply(t, slice.call(arguments, 1));
         };
     })(methods[p]);
@@ -136,7 +136,7 @@ values: function() {
     this.each(function(k, v) { ret.push(v) });
     return ret;
 },
-asJSON: function(replacer, space){
+asJSON: function(replacer, space) {
     return JSON.stringify(this, replacer, space);
 },
 toObject: function() {
@@ -144,35 +144,35 @@ toObject: function() {
     this.each(function(k, v) { ret[k] = v });
     return ret;
 },
-toRegExp: function(flag){
+toRegExp: function(flag) {
     return new RegExp(this.__RegExp(), flag);
 }
 });
 
 var quotemeta = function(str) {
-    return str.replace(/[\S\s]/g, function(m){
-        var cc = m.charCodeAt(0)
+    return str.replace(/[\S\s]/g, function(m) {
+        var cc = m.charCodeAt(0);
         return cc < 128
             ? m.match(/^\w$/) ? m : '\\x' + cc.toString(16)
-            : m
+            : m;
     });
 };
 
-TP.prototype.__RegExp = function(){
+TP.prototype.__RegExp = function() {
     var self = this;
     var alt = [], ccs = [], q = false;
     Object.keys(this).sort().forEach(function(cc) {
-        if (cc){
+        if (cc) {
             var qc = quotemeta(cc);
             if (self[cc] instanceof TP) {
                 alt.push(qc + self[cc].__RegExp());
             } else {
-                var qk = quotemeta(self[cc][0] || ''), 
+                var qk = quotemeta(self[cc][0] || ''),
                     pv = self[cc][1];
                 if (pv instanceof TP) alt.push(qc + qk + pv.__RegExp());
                 else (qk.length ? alt : ccs).push(qc + qk);
             }
-        }else{
+        }else {
             q = true;
         }
     });
@@ -184,6 +184,6 @@ TP.prototype.__RegExp = function(){
     return ret;
 };
 
-global.Trie = global.Trie || function(){};
+global.Trie = global.Trie || function() {};
 global.Trie.Patricia = TP;
 })(this);
